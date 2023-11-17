@@ -1,0 +1,249 @@
+﻿<Window x:Class="_20231116.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_20231116"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="588" Width="373">
+    <Window.Resources>
+        <Style x:Key="InvisibleButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="1"/>
+        </Style>
+
+        <Style x:Key="NomalButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                            CornerRadius="5" 
+                                BorderBrush="White"
+                            BorderThickness="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="SpecialButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Background" Value=" #005a9e"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                    CornerRadius="5" 
+                        BorderBrush=" #005a9e"
+                    BorderThickness="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HighlightToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}">
+                            <Grid>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border x:Name="bottomLine" Height="3" Width="15"  VerticalAlignment="Bottom" Background="Transparent"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+
+                                <Setter TargetName="bottomLine" Property="Background" Value="#FF005A9E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="lightToggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5" BorderBrush="White" BorderThickness="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF005A9E"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF005A9E"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="0,0,0,3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+
+
+    </Window.Resources>
+
+    <Grid Margin="5" Background="#f3f3f3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox IsReadOnly="True"  BorderBrush="Transparent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Margin="5" Height="80" VerticalContentAlignment ="Center" TextAlignment="Right" FontWeight="Bold" FontSize="40" 
+                 TextChanged="TextBox_TextChanged" Background="#f3f3f3" Text="{Binding TextValue, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource InvisibleButtonStyle}" Click="Button_Click">DEG</Button>
+        <ToggleButton Grid.Row="1" Grid.Column="1" Style="{StaticResource HighlightToggleButtonStyle}" Click="Button_Click_1">F-E</ToggleButton>
+
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="38.333"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="38.333"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource InvisibleButtonStyle}">MC</Button>
+            <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource InvisibleButtonStyle}">MR</Button>
+            <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource InvisibleButtonStyle}">M+</Button>
+            <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource InvisibleButtonStyle}">M-</Button>
+            <Button Grid.Row="1" Grid.Column="4" Style="{StaticResource InvisibleButtonStyle}">MS</Button>
+            <Button Grid.Row="1" Grid.Column="5" Style="{StaticResource InvisibleButtonStyle}">M∨</Button>
+        </Grid>
+
+        <Button x:Name="openTriPopupButton"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource InvisibleButtonStyle}" Click="OpenTriPopupButton_Click">⊿ 삼각법 ∨</Button >
+
+        <Popup x:Name="Trigonometry"  PlacementTarget="{Binding ElementName=openTriPopupButton}" Placement="Bottom"  StaysOpen="False">
+            <Border Background="#e5e5e5" Width="250" Height="100">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ToggleButton x:Name="Trigonometry2nd" Grid.Row="0" Grid.Column="0" Content="2nd" Style="{StaticResource lightToggleButtonStyle}" Click="ChangeTrigonometry2nd"/>
+                    <Button x:Name="sin" Grid.Row="0" Grid.Column="1" Content="sin" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="cos" Grid.Row="0" Grid.Column="2" Content="cos" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="tan" Grid.Row="0" Grid.Column="3" Content="tan" Style="{StaticResource NomalButtonStyle}"/>
+
+                    <ToggleButton x:Name="TrigonometryHyp" Grid.Row="1" Grid.Column="0" Content="hyp" Style="{StaticResource lightToggleButtonStyle}" Click="ChangeTrigonometryHyp"/>
+                    <Button x:Name="sec" Grid.Row="1" Grid.Column="1" Content="sec" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="csc" Grid.Row="1" Grid.Column="2" Content="csc" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="cot" Grid.Row="1" Grid.Column="3" Content="cot" Style="{StaticResource NomalButtonStyle}"/>
+
+                </Grid>
+            </Border>
+        </Popup>
+
+        <Button x:Name="openFunPopupButton" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Style="{StaticResource InvisibleButtonStyle}" Click="openFunPopupButton_Click">∫ 함수 ∨</Button>
+
+        <Popup x:Name="function"  PlacementTarget="{Binding ElementName=openFunPopupButton}" Placement="Bottom"  StaysOpen="False">
+            <Border Background="#e5e5e5" Width="200" Height="80">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="abs" Grid.Row="0" Grid.Column="0" Content="abs" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="floor" Grid.Row="0" Grid.Column="1" Content="floor" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="ceil" Grid.Row="0" Grid.Column="2" Content="ceil" Style="{StaticResource NomalButtonStyle}"/>
+
+                    <Button x:Name="rand" Grid.Row="1" Grid.Column="0" Content="rand" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="dms" Grid.Row="1" Grid.Column="1" Content="->dms" Style="{StaticResource NomalButtonStyle}"/>
+                    <Button x:Name="degrees" Grid.Row="1" Grid.Column="2" Content="->deg" Style="{StaticResource NomalButtonStyle}"/>
+
+                </Grid>
+            </Border>
+        </Popup>
+
+        <ToggleButton x:Name="NumPad2nd" Grid.Row="4" Grid.Column="0" Style="{StaticResource lightToggleButtonStyle}" Checked="NumPad2nd_Checked" Unchecked="NumPad2nd_Unchecked">2nd</ToggleButton>
+        <Button Grid.Row="4" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">π</Button>
+        <Button Grid.Row="4" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">e</Button>
+        <Button Grid.Row="4" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">Ⅽ</Button>
+        <Button Grid.Row="4" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">⌫</Button>
+
+        <Button x:Name="sqr" Grid.Row="5" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">x²</Button>
+        <Button Grid.Row="5" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">1/x</Button>
+        <Button Grid.Row="5" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">|x|</Button>
+        <Button Grid.Row="5" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">exp</Button>
+        <Button Grid.Row="5" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">mod</Button>
+
+        <Button x:Name="root" Grid.Row="6" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">2√x</Button>
+        <Button Grid.Row="6" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">(</Button>
+        <Button Grid.Row="6" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">)</Button>
+        <Button Grid.Row="6" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">n!</Button>
+        <Button Grid.Row="6" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">÷</Button>
+
+        <Button x:Name="square" Grid.Row="7" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">x^y</Button>
+        <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">7</Button>
+        <Button Grid.Row="7" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">8</Button>
+        <Button Grid.Row="7" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">9</Button>
+        <Button Grid.Row="7" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">×</Button>
+
+        <Button x:Name="square10" Grid.Row="8" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">10^x</Button>
+        <Button Grid.Row="8" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">4</Button>
+        <Button Grid.Row="8" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">5</Button>
+        <Button Grid.Row="8" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">6</Button>
+        <Button Grid.Row="8" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">-</Button>
+
+        <Button x:Name="log" Grid.Row="9" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">log</Button>
+        <Button Grid.Row="9" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_2">1</Button>
+        <Button Grid.Row="9" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">2</Button>
+        <Button Grid.Row="9" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">3</Button>
+        <Button Grid.Row="9" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">+</Button>
+
+        <Button x:Name="nSquare" Grid.Row="10" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">ln</Button>
+        <Button Grid.Row="10" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">+/-</Button>
+        <Button Grid.Row="10" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">0</Button>
+        <Button Grid.Row="10" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">.</Button>
+        <Button Grid.Row="10" Grid.Column="4" Style="{StaticResource SpecialButtonStyle}">=</Button>
+    </Grid>
+</Window>
