@@ -218,8 +218,57 @@ namespace _20231116
                 nSquare.Content = "ln";
         }
 
-        //넘패드1
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        //넘패드0 ~ 9
+        private void Button_Click_num1(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(1);
+        }
+
+        private void Button_Click_num2(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(2);
+        }
+
+        private void Button_Click_num3(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(3);
+        }
+
+        private void Button_Click_num4(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(4);
+        }
+
+        private void Button_Click_num5(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(5);
+        }
+        private void Button_Click_num6(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(6);
+        }
+
+        private void Button_Click_num7(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(7);
+        }
+
+        private void Button_Click_num8(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(8);
+        }
+
+        private void Button_Click_num9(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(9);
+        }
+
+        private void Button_Click_num0(object sender, RoutedEventArgs e)
+        {
+            TextValueUpdate(0);
+        }
+
+        private void TextValueUpdate(int num)
         {
             var viewModel = DataContext as ViewModel;
             if (viewModel != null)
@@ -235,7 +284,7 @@ namespace _20231116
                 if (currentNumber <= maxValue)
                 {
                     // 숫자 추가
-                    var updatedNumber = BigInteger.Parse(numericText + "1");
+                    var updatedNumber = BigInteger.Parse(numericText + Convert.ToString(num));
 
                     // 새로운 숫자를 문자열로 변환하고 콤마를 추가
                     viewModel.TextValue = FormatNumberWithCommas(updatedNumber);
