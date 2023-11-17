@@ -224,28 +224,44 @@ namespace _20231116
             var viewModel = DataContext as ViewModel;
             if (viewModel != null)
             {
-                var numericText = viewModel.TextValue.Replace(",", "");
+                var numericText = viewModel.TextValue.Replace(",", "").Replace(" ", ""); // 콤마와 공백 제거
 
-                // StringBuilder를 사용하여 새 문자열을 구성합니다.
-                var builder = new StringBuilder();
-                int count = 0;
-                for (int i = numericText.Length - 1; i >= 0; i--)
+                // BigInteger로 변환
+                BigInteger.TryParse(numericText, out BigInteger currentNumber);
+
+                var maxValue = BigInteger.Parse("9999999999999999999999999999999");
+
+                // 최대값 체크
+                if (currentNumber <= maxValue)
                 {
-                    // 뒤에서부터 문자를 추가합니다.
-                    builder.Append(numericText[i]);
-                    count++;
+                    // 숫자 추가
+                    var updatedNumber = BigInteger.Parse(numericText + "1");
 
-                    // 3자리마다 ','를 추가합니다.
-                    if (count % 3 == 0 && i != 0)
-                    {
-                        builder.Append(",");
-                    }
+                    // 새로운 숫자를 문자열로 변환하고 콤마를 추가
+                    viewModel.TextValue = FormatNumberWithCommas(updatedNumber);
                 }
-
-                // 문자열을 뒤집어 원래 순서로 만듭니다.
-                viewModel.TextValue = new string(builder.ToString().Reverse().ToArray());
             }
         }
+
+        //콤마 추가
+        private string FormatNumberWithCommas(BigInteger number)
+        {
+            var numericText = number.ToString();
+            var builder = new StringBuilder();
+            int count = 0;
+            for (int i = numericText.Length - 1; i >= 0; i--)
+            {
+                builder.Append(numericText[i]);
+                count++;
+                if (count % 3 == 0 && i != 0)
+                {
+                    builder.Append(",");
+                }
+            }
+            return new string(builder.ToString().Reverse().ToArray());
+        }
+
+
 
     }
 }
