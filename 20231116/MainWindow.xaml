@@ -207,9 +207,9 @@
         </Popup>
 
         <ToggleButton x:Name="NumPad2nd" Grid.Row="5" Grid.Column="0" Style="{StaticResource lightToggleButtonStyle}" Checked="NumPad2nd_Checked" Unchecked="NumPad2nd_Unchecked">2nd</ToggleButton>
-        <Button Grid.Row="5" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">π</Button>
+        <Button Grid.Row="5" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_3">π</Button>
         <Button Grid.Row="5" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">e</Button>
-        <Button Grid.Row="5" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">Ⅽ</Button>
+        <Button Grid.Row="5" Grid.Column="3" Style="{StaticResource NomalButtonStyle}" Height="39" Margin="2,2,2,0" VerticalAlignment="Top" Click="Button_Click_2">Ⅽ</Button>
         <Button Grid.Row="5" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="BackspaceButton_Click">⌫</Button>
 
         <Button x:Name="sqr" Grid.Row="6" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">x²</Button>
@@ -219,8 +219,8 @@
         <Button Grid.Row="6" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">mod</Button>
 
         <Button x:Name="root" Grid.Row="7" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">2√x</Button>
-        <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">(</Button>
-        <Button Grid.Row="7" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">)</Button>
+        <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="LBraButton_Click">(</Button>
+        <Button Grid.Row="7" Grid.Column="2" Style="{StaticResource NomalButtonStyle}" Click="RBraButton_Click">)</Button>
         <Button Grid.Row="7" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">n!</Button>
         <Button Grid.Row="7" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="DivButton_Click">÷</Button>
 

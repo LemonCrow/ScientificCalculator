@@ -125,6 +125,8 @@ namespace _20231116
         private string[] angles = { "GRAD", "DEG", "RAD" };
         private int anglesInt = 1;
 
+        private bool isBra = false;
+
         private BigInteger stringNumber = 0;
 
 
@@ -132,7 +134,36 @@ namespace _20231116
         {
             InitializeComponent();
             DataContext = new ViewModel();
+            this.KeyDown += new KeyEventHandler(OnButtonKeyDown);
 
+        }
+
+        private void OnButtonKeyDown(object sender, KeyEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+
+            if (viewModel == null) return;
+
+            // 숫자 키 입력 처리
+            if (e.Key >= Key.D0 && e.Key <= Key.D9)
+            {
+                // 키보드의 상단 숫자 키 입력 처리
+                TextValueUpdate((e.Key - Key.D0));
+            }
+            else if (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9)
+            {
+                // 숫자 패드 키 입력 처리
+                TextValueUpdate((e.Key - Key.NumPad0));
+            }
+            else if (e.Key == Key.Add)
+            {
+                // 추가 로직: '+' 연산 처리
+                // 예시: viewModel.PerformOperation('+');
+            }
+            // 여기에 다른 연산자 및 기능에 대한 키 처리 로직 추가
+            // 예: 빼기, 곱하기, 나누기, 등호, 백스페이스 등
+
+            // ViewModel의 TextValue가 자동으로 업데이트되도록 구현
         }
 
         private void ExpressionTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -394,20 +425,29 @@ namespace _20231116
         //콤마 추가
         private string FormatNumberWithCommas(BigInteger number)
         {
+            bool isNegative = number < 0;
             var numericText = number.ToString();
             var builder = new StringBuilder();
+
             int count = 0;
-            for (int i = numericText.Length - 1; i >= 0; i--)
+            int start = isNegative ? 1 : 0; // 음수인 경우 첫 번째 자리 ('-')를 건너뜁니다.
+
+            for (int i = numericText.Length - 1; i >= start; i--)
             {
                 builder.Append(numericText[i]);
                 count++;
-                if (count % 3 == 0 && i != 0)
+
+                if (count % 3 == 0 && i != start)
                 {
                     builder.Append(",");
                 }
             }
-            return new string(builder.ToString().Reverse().ToArray());
+
+            string formattedNumber = new string(builder.ToString().Reverse().ToArray());
+            return isNegative ? "-" + formattedNumber : formattedNumber; // 음수인 경우 앞에 '-' 추가
         }
+
+
 
         // 숫자 하나씩 지우기
         private void BackspaceButton_Click(object sender, RoutedEventArgs e)
@@ -442,16 +482,33 @@ namespace _20231116
                     viewModel.FullExpression = "";
                     viewModel._isFinal = false;
                 }
+
                 // 이전 결과를 현재 값으로 설정
                 viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
-                // 현재 수식을 평가하여 결과 저장
-                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                viewModel.PreviousResult = result;
+                if(viewModel.PreviousResult != viewModel.PreviousNumber)
+                {
+                    // 현재 수식을 평가하여 결과 저장               
+                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                    viewModel.PreviousResult = result;
 
-                // 연산자 추가 및 TextValue 업데이트
-                viewModel.Expression += viewModel.TextValue + " + ";
-                viewModel.TextValue = FormatNumberWithCommas(result);
+                    // 연산자 추가 및 TextValue 업데이트
+                    viewModel.Expression += viewModel.TextValue + " + ";
+                    viewModel.TextValue = FormatNumberWithCommas(result);
+                }
+                else
+                {
+                    if (viewModel.Expression.Split(' ').Length > 2)
+                    {
+                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                        {
+                            viewModel.Expression += " + ";
+                        }
+                    }
+
+                }
+
             }
         }
 
@@ -471,13 +528,28 @@ namespace _20231116
                 // 이전 결과를 현재 값으로 설정
                 viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
-                // 현재 수식을 평가하여 결과 저장
-                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                viewModel.PreviousResult = result;
+                if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                {
+                    // 현재 수식을 평가하여 결과 저장               
+                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                    viewModel.PreviousResult = result;
 
-                // 연산자 추가 및 TextValue 업데이트
-                viewModel.Expression += viewModel.TextValue + " - ";
-                viewModel.TextValue = FormatNumberWithCommas(result);
+                    // 연산자 추가 및 TextValue 업데이트
+                    viewModel.Expression += viewModel.TextValue + " - ";
+                    viewModel.TextValue = FormatNumberWithCommas(result);
+                }
+                else
+                {
+                    if (viewModel.Expression.Split(' ').Length > 2)
+                    {
+                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                        {
+                            viewModel.Expression += " - ";
+                        }
+                    }
+
+                }
             }
         }
 
@@ -495,13 +567,29 @@ namespace _20231116
                 // 이전 결과를 현재 값으로 설정
                 viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
-                // 현재 수식을 평가하여 결과 저장
-                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                viewModel.PreviousResult = result;
 
-                // 연산자 추가 및 TextValue 업데이트
-                viewModel.Expression += viewModel.TextValue + " × ";
-                viewModel.TextValue = FormatNumberWithCommas(result);
+                if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                {
+                    // 현재 수식을 평가하여 결과 저장               
+                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                    viewModel.PreviousResult = result;
+
+                    // 연산자 추가 및 TextValue 업데이트
+                    viewModel.Expression += viewModel.TextValue + " × ";
+                    viewModel.TextValue = FormatNumberWithCommas(result);
+                }
+                else
+                {
+                    if (viewModel.Expression.Split(' ').Length > 2)
+                    {
+                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                        {
+                            viewModel.Expression += " × ";
+                        }
+                    }
+
+                }
             }
         }
 
@@ -519,15 +607,66 @@ namespace _20231116
                 // 이전 결과를 현재 값으로 설정
                 viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
-                // 현재 수식을 평가하여 결과 저장
+                if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                {
+                    // 현재 수식을 평가하여 결과 저장               
+                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                    viewModel.PreviousResult = result;
+
+                    // 연산자 추가 및 TextValue 업데이트
+                    viewModel.Expression += viewModel.TextValue + " ÷ ";
+                    viewModel.TextValue = FormatNumberWithCommas(result);
+                }
+                else
+                {
+                    if (viewModel.Expression.Split(' ').Length > 2)
+                    {
+                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                        {
+                            viewModel.Expression += " ÷ ";
+                        }
+                    }
+
+                }
+            }
+        }
+
+        private void LBraButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                viewModel.Expression += " ( ";
+            }
+        }
+
+        private void RBraButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                // 'FullExpression'이 비어있지 않으면 초기화
+                if (!string.IsNullOrEmpty(viewModel.FullExpression))
+                {
+                    viewModel.Expression = "";
+                    viewModel.FullExpression = "";
+                    viewModel._isFinal = false;
+                }
+
+                
+
+                // 전체 수식 평가
                 var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
                 viewModel.PreviousResult = result;
 
-                // 연산자 추가 및 TextValue 업데이트
-                viewModel.Expression += viewModel.TextValue + " ÷ ";
+                // 현재 텍스트 값과 닫는 괄호 추가
+                viewModel.Expression += viewModel.TextValue + " ) ";
                 viewModel.TextValue = FormatNumberWithCommas(result);
+
             }
         }
+
 
         // '=' 버튼 클릭 이벤트
         private void EqualsButton_Click(object sender, RoutedEventArgs e)
@@ -559,15 +698,17 @@ namespace _20231116
         //중위 -> 후위 컨버터 및 필요 항목 추출 평가
         private BigInteger EvaluateExpression(string expression)
         {
+            System.Diagnostics.Debug.WriteLine("expression: " + expression);
             var outputQueue = ConvertToPostfix(expression);
             return EvaluatePostfix(outputQueue);
         }
 
         private Queue<string> ConvertToPostfix(string infix)
         {
+            string result = infix.Replace(",", "");
             var outputQueue = new Queue<string>();
             var operatorStack = new Stack<string>();
-            var tokens = Regex.Split(infix, @"(\s+|\+|\-|\*|\/|\^|\(|\))");
+            var tokens = Regex.Split(result, @"(\s+|\+|\-|\*|\/|\^|\(|\))");
 
             foreach (var token in tokens)
             {
@@ -591,11 +732,12 @@ namespace _20231116
                 }
                 else if (token == ")")
                 {
-                    string op;
-                    while ((op = operatorStack.Pop()) != "(")
+                    while (operatorStack.Count > 0 && operatorStack.Peek() != "(")
                     {
-                        outputQueue.Enqueue(op);
+                        outputQueue.Enqueue(operatorStack.Pop());
                     }
+                    if (operatorStack.Count > 0)
+                        operatorStack.Pop(); // 여는 괄호 제거
                 }
             }
 
@@ -607,13 +749,17 @@ namespace _20231116
             return outputQueue;
         }
 
+
+
         private BigInteger EvaluatePostfix(Queue<string> postfix)
         {
             var valuesStack = new Stack<BigInteger>();
 
             while (postfix.Count > 0)
             {
+
                 var token = postfix.Dequeue();
+                System.Diagnostics.Debug.WriteLine("Processing token: " + token); // 현재 토큰 로그 출력
 
                 if (BigInteger.TryParse(token, out BigInteger number))
                 {
@@ -621,14 +767,39 @@ namespace _20231116
                 }
                 else if (IsOperator(token))
                 {
+                    if (valuesStack.Count < 2)
+                    {
+                        if(token == "-")
+                        {
+                            BigInteger val4 = valuesStack.Pop();
+                            BigInteger val3 = 0;
+                            valuesStack.Push(ApplyOperation(val3, val4, token));
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Not enough values in the stack for the operation: " + token);
+                        }
+                    }
+
                     BigInteger val2 = valuesStack.Pop();
                     BigInteger val1 = valuesStack.Pop();
                     valuesStack.Push(ApplyOperation(val1, val2, token));
                 }
+
+                System.Diagnostics.Debug.WriteLine("Stack status: " + string.Join(", ", valuesStack)); // 스택 상태 로그 출력
+            }
+
+            if (valuesStack.Count != 1)
+            {
+                throw new InvalidOperationException("Invalid expression - the stack should contain exactly one value.");
             }
 
             return valuesStack.Pop();
         }
+
+
+
+
 
         private bool IsOperator(string token)
         {
@@ -659,7 +830,11 @@ namespace _20231116
                 case "+":
                     return val1 + val2;
                 case "-":
-                    return val1 - val2;
+                    // 첫 번째 피연산자가 없거나 0이면 두 번째 피연산자를 음수로 변환
+                    if (val1 == 0)
+                        return -val2;
+                    else
+                        return val1 - val2;
                 case "×":
                     return val1 * val2;
                 case "÷":
@@ -673,6 +848,22 @@ namespace _20231116
         }
 
 
+        //c버튼
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                viewModel.Expression = "";
+                viewModel.FullExpression = "";
+                viewModel.TextValue = "0";
+            }
+        }
 
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            var viewModel = DataContext as ViewModel;
+        }
     }
 }
