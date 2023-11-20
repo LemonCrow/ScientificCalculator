@@ -24,6 +24,7 @@ namespace _20231116
     {
         private string _textValue = "0";
         private string _expression = "";
+        public bool _isFinal = false;
 
         public string TextValue
         {
@@ -99,6 +100,20 @@ namespace _20231116
                 }
             }
         }
+
+        private string _fullExpression = "";
+    public string FullExpression
+    {
+        get { return _fullExpression; }
+        set
+        {
+            if (_fullExpression != value)
+            {
+                _fullExpression = value;
+                OnPropertyChanged(nameof(FullExpression));
+            }
+        }
+    }
 
 
     }
@@ -351,6 +366,13 @@ namespace _20231116
             var viewModel = DataContext as ViewModel;
             if (viewModel != null)
             {
+                if (!string.IsNullOrEmpty(viewModel.FullExpression))
+                {
+                    viewModel.Expression = "";
+                    viewModel.FullExpression = "";
+                    viewModel.TextValue = "0";
+                    viewModel._isFinal = false;
+                }
                 // 이전 연산 결과가 표시되고 있는지 확인
                 if (viewModel.TextValue == FormatNumberWithCommas(viewModel.PreviousResult))
                 {
@@ -414,6 +436,12 @@ namespace _20231116
             var viewModel = DataContext as ViewModel;
             if (viewModel != null)
             {
+                if (!string.IsNullOrEmpty(viewModel.FullExpression))
+                {
+                    viewModel.Expression = "";
+                    viewModel.FullExpression = "";
+                    viewModel._isFinal = false;
+                }
                 // 이전 결과를 현재 값으로 설정
                 viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
@@ -429,22 +457,106 @@ namespace _20231116
 
 
 
+        private void MinButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                if (!string.IsNullOrEmpty(viewModel.FullExpression))
+                {
+                    viewModel.Expression = "";
+                    viewModel.FullExpression = "";
+                    viewModel._isFinal = false;
+                }
+                // 이전 결과를 현재 값으로 설정
+                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
+
+                // 현재 수식을 평가하여 결과 저장
+                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                viewModel.PreviousResult = result;
+
+                // 연산자 추가 및 TextValue 업데이트
+                viewModel.Expression += viewModel.TextValue + " - ";
+                viewModel.TextValue = FormatNumberWithCommas(result);
+            }
+        }
+
+        private void MulButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                if (!string.IsNullOrEmpty(viewModel.FullExpression))
+                {
+                    viewModel.Expression = "";
+                    viewModel.FullExpression = "";
+                    viewModel._isFinal = false;
+                }
+                // 이전 결과를 현재 값으로 설정
+                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
+
+                // 현재 수식을 평가하여 결과 저장
+                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                viewModel.PreviousResult = result;
+
+                // 연산자 추가 및 TextValue 업데이트
+                viewModel.Expression += viewModel.TextValue + " × ";
+                viewModel.TextValue = FormatNumberWithCommas(result);
+            }
+        }
+
+        private void DivButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                if (!string.IsNullOrEmpty(viewModel.FullExpression))
+                {
+                    viewModel.Expression = "";
+                    viewModel.FullExpression = "";
+                    viewModel._isFinal = false;
+                }
+                // 이전 결과를 현재 값으로 설정
+                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
+
+                // 현재 수식을 평가하여 결과 저장
+                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                viewModel.PreviousResult = result;
+
+                // 연산자 추가 및 TextValue 업데이트
+                viewModel.Expression += viewModel.TextValue + " ÷ ";
+                viewModel.TextValue = FormatNumberWithCommas(result);
+            }
+        }
+
         // '=' 버튼 클릭 이벤트
         private void EqualsButton_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as ViewModel;
             if (viewModel != null)
             {
-                // 현재 수식 평가 및 결과 업데이트
-                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                viewModel.Expression = ""; // 수식 초기화
+                // 현재 수식과 입력된 값을 결합하여 결과를 계산
+                var combinedExpression = viewModel.Expression + viewModel.TextValue;
+                var result = EvaluateExpression(combinedExpression);
+
+                // 결과와 함께 전체 수식을 FullExpression에 저장
+                viewModel.FullExpression = combinedExpression + " = " + FormatNumberWithCommas(result);
+
+                // 결과를 TextValue에 표시
                 viewModel.TextValue = FormatNumberWithCommas(result);
 
                 // 다음 계산을 위해 PreviousResult 초기화
                 viewModel.PreviousResult = 0;
+
+                // 현재 수식을 마지막 연산으로 업데이트
+                viewModel.Expression = combinedExpression + " = ";
+
+                viewModel._isFinal = true;
             }
         }
 
+
+        //중위 -> 후위 컨버터 및 필요 항목 추출 평가
         private BigInteger EvaluateExpression(string expression)
         {
             var outputQueue = ConvertToPostfix(expression);
@@ -520,7 +632,7 @@ namespace _20231116
 
         private bool IsOperator(string token)
         {
-            return new HashSet<string> { "+", "-", "*", "/", "^" }.Contains(token);
+            return new HashSet<string> { "+", "-", "×", "÷", "^" }.Contains(token);
         }
 
         private int GetPrecedence(string op)
@@ -530,8 +642,8 @@ namespace _20231116
                 case "+":
                 case "-":
                     return 1;
-                case "*":
-                case "/":
+                case "×":
+                case "÷":
                     return 2;
                 case "^":
                     return 3;
@@ -548,9 +660,9 @@ namespace _20231116
                     return val1 + val2;
                 case "-":
                     return val1 - val2;
-                case "*":
+                case "×":
                     return val1 * val2;
-                case "/":
+                case "÷":
                     if (val2 == 0) throw new DivideByZeroException();
                     return val1 / val2;
                 case "^":

@@ -222,19 +222,19 @@
         <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">(</Button>
         <Button Grid.Row="7" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">)</Button>
         <Button Grid.Row="7" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">n!</Button>
-        <Button Grid.Row="7" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">÷</Button>
+        <Button Grid.Row="7" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="DivButton_Click">÷</Button>
 
         <Button x:Name="square" Grid.Row="8" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">x^y</Button>
         <Button Grid.Row="8" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num7">7</Button>
         <Button Grid.Row="8" Grid.Column="2" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num8">8</Button>
         <Button Grid.Row="8" Grid.Column="3" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num9">9</Button>
-        <Button Grid.Row="8" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">×</Button>
+        <Button Grid.Row="8" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="MulButton_Click">×</Button>
 
         <Button x:Name="square10" Grid.Row="9" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">10^x</Button>
         <Button Grid.Row="9" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num4">4</Button>
         <Button Grid.Row="9" Grid.Column="2" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num5">5</Button>
         <Button Grid.Row="9" Grid.Column="3" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num6">6</Button>
-        <Button Grid.Row="9" Grid.Column="4" Style="{StaticResource NomalButtonStyle}">-</Button>
+        <Button Grid.Row="9" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="MinButton_Click">-</Button>
 
         <Button x:Name="log" Grid.Row="10" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">log</Button>
         <Button Grid.Row="10" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num1">1</Button>
