@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,10 +19,11 @@ using System.Windows.Shapes;
 
 namespace _20231116
 {
-    //숫자담는용
+    //숫자 바인딩
     public class ViewModel : INotifyPropertyChanged
     {
         private string _textValue = "0";
+        private string _expression = "";
 
         public string TextValue
         {
@@ -36,12 +38,69 @@ namespace _20231116
             }
         }
 
+        public string Expression
+        {
+            get { return _expression; }
+            set
+            {
+                if (_expression != value)
+                {
+                    _expression = value;
+                    OnPropertyChanged(nameof(Expression));
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private BigInteger previousNumber;
+        public BigInteger PreviousNumber
+        {
+            get { return previousNumber; }
+            set
+            {
+                if (previousNumber != value)
+                {
+                    previousNumber = value;
+                    OnPropertyChanged(nameof(PreviousNumber));
+                }
+            }
+        }
+
+        private string operation = string.Empty;
+        public string Operation
+        {
+            get { return operation; }
+            set
+            {
+                if (operation != value)
+                {
+                    operation = value;
+                    OnPropertyChanged(nameof(Operation));
+                }
+            }
+        }
+
+        private BigInteger _previousResult;
+        public BigInteger PreviousResult
+        {
+            get { return _previousResult; }
+            set
+            {
+                if (_previousResult != value)
+                {
+                    _previousResult = value;
+                    OnPropertyChanged(nameof(PreviousResult));
+                }
+            }
+        }
+
+
     }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -61,6 +120,25 @@ namespace _20231116
 
         }
 
+        private void ExpressionTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                // 수식 길이에 따라 폰트 크기 조정
+                textBox.FontSize = CalculateFontSizeForExpression(textBox.Text);
+            }
+        }
+
+        private double CalculateFontSizeForExpression(string text)
+        {
+            // 예시: 길이에 따라 폰트 크기 조정 로직
+            if (text.Length < 20) return 15;
+            if (text.Length < 40) return 13;
+            if (text.Length < 60) return 10;
+
+            return 14; // 최소 폰트 크기
+        }
 
         //각도
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -273,24 +351,23 @@ namespace _20231116
             var viewModel = DataContext as ViewModel;
             if (viewModel != null)
             {
-                var numericText = viewModel.TextValue.Replace(",", "").Replace(" ", ""); // 콤마와 공백 제거
-
-                // BigInteger로 변환
-                BigInteger.TryParse(numericText, out BigInteger currentNumber);
-
-                var maxValue = BigInteger.Parse("9999999999999999999999999999999");
-
-                // 최대값 체크
-                if (currentNumber <= maxValue)
+                // 이전 연산 결과가 표시되고 있는지 확인
+                if (viewModel.TextValue == FormatNumberWithCommas(viewModel.PreviousResult))
                 {
-                    // 숫자 추가
-                    var updatedNumber = BigInteger.Parse(numericText + Convert.ToString(num));
-
-                    // 새로운 숫자를 문자열로 변환하고 콤마를 추가
+                    // 새로운 숫자로 텍스트 업데이트
+                    viewModel.TextValue = num.ToString();
+                }
+                else
+                {
+                    // 기존 값에 숫자 추가
+                    var numericText = viewModel.TextValue.Replace(",", "").Replace(" ", "");
+                    var updatedNumber = BigInteger.Parse(numericText + num);
                     viewModel.TextValue = FormatNumberWithCommas(updatedNumber);
                 }
             }
         }
+
+
 
         //콤마 추가
         private string FormatNumberWithCommas(BigInteger number)
@@ -308,6 +385,179 @@ namespace _20231116
                 }
             }
             return new string(builder.ToString().Reverse().ToArray());
+        }
+
+        // 숫자 하나씩 지우기
+        private void BackspaceButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null && viewModel.TextValue.Length > 0)
+            {
+                var numericText = viewModel.TextValue.Replace(",", "").Replace(" ", ""); 
+                numericText = numericText.Substring(0, numericText.Length - 1); 
+
+                if (!string.IsNullOrEmpty(numericText))
+                {
+                    BigInteger.TryParse(numericText, out BigInteger updatedNumber);
+                    viewModel.TextValue = FormatNumberWithCommas(updatedNumber);
+                }
+                else
+                {
+                    viewModel.TextValue = "0";
+                }
+            }
+        }
+
+        // 연산 버튼 클릭 이벤트 (더하기)
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                // 이전 결과를 현재 값으로 설정
+                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
+
+                // 현재 수식을 평가하여 결과 저장
+                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                viewModel.PreviousResult = result;
+
+                // 연산자 추가 및 TextValue 업데이트
+                viewModel.Expression += viewModel.TextValue + " + ";
+                viewModel.TextValue = FormatNumberWithCommas(result);
+            }
+        }
+
+
+
+        // '=' 버튼 클릭 이벤트
+        private void EqualsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel != null)
+            {
+                // 현재 수식 평가 및 결과 업데이트
+                var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                viewModel.Expression = ""; // 수식 초기화
+                viewModel.TextValue = FormatNumberWithCommas(result);
+
+                // 다음 계산을 위해 PreviousResult 초기화
+                viewModel.PreviousResult = 0;
+            }
+        }
+
+        private BigInteger EvaluateExpression(string expression)
+        {
+            var outputQueue = ConvertToPostfix(expression);
+            return EvaluatePostfix(outputQueue);
+        }
+
+        private Queue<string> ConvertToPostfix(string infix)
+        {
+            var outputQueue = new Queue<string>();
+            var operatorStack = new Stack<string>();
+            var tokens = Regex.Split(infix, @"(\s+|\+|\-|\*|\/|\^|\(|\))");
+
+            foreach (var token in tokens)
+            {
+                if (string.IsNullOrWhiteSpace(token)) continue;
+
+                if (BigInteger.TryParse(token, out BigInteger number))
+                {
+                    outputQueue.Enqueue(token);
+                }
+                else if (IsOperator(token))
+                {
+                    while (operatorStack.Count > 0 && GetPrecedence(operatorStack.Peek()) >= GetPrecedence(token))
+                    {
+                        outputQueue.Enqueue(operatorStack.Pop());
+                    }
+                    operatorStack.Push(token);
+                }
+                else if (token == "(")
+                {
+                    operatorStack.Push(token);
+                }
+                else if (token == ")")
+                {
+                    string op;
+                    while ((op = operatorStack.Pop()) != "(")
+                    {
+                        outputQueue.Enqueue(op);
+                    }
+                }
+            }
+
+            while (operatorStack.Count > 0)
+            {
+                outputQueue.Enqueue(operatorStack.Pop());
+            }
+
+            return outputQueue;
+        }
+
+        private BigInteger EvaluatePostfix(Queue<string> postfix)
+        {
+            var valuesStack = new Stack<BigInteger>();
+
+            while (postfix.Count > 0)
+            {
+                var token = postfix.Dequeue();
+
+                if (BigInteger.TryParse(token, out BigInteger number))
+                {
+                    valuesStack.Push(number);
+                }
+                else if (IsOperator(token))
+                {
+                    BigInteger val2 = valuesStack.Pop();
+                    BigInteger val1 = valuesStack.Pop();
+                    valuesStack.Push(ApplyOperation(val1, val2, token));
+                }
+            }
+
+            return valuesStack.Pop();
+        }
+
+        private bool IsOperator(string token)
+        {
+            return new HashSet<string> { "+", "-", "*", "/", "^" }.Contains(token);
+        }
+
+        private int GetPrecedence(string op)
+        {
+            switch (op)
+            {
+                case "+":
+                case "-":
+                    return 1;
+                case "*":
+                case "/":
+                    return 2;
+                case "^":
+                    return 3;
+                default:
+                    return 0;
+            }
+        }
+
+        private BigInteger ApplyOperation(BigInteger val1, BigInteger val2, string operation)
+        {
+            switch (operation)
+            {
+                case "+":
+                    return val1 + val2;
+                case "-":
+                    return val1 - val2;
+                case "*":
+                    return val1 * val2;
+                case "/":
+                    if (val2 == 0) throw new DivideByZeroException();
+                    return val1 / val2;
+                case "^":
+                    return BigInteger.Pow(val1, (int)val2);
+                default:
+                    throw new NotSupportedException($"Unsupported operation: {operation}");
+            }
         }
 
 
