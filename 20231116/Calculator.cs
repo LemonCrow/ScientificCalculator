@@ -98,5 +98,9 @@ namespace _20231116
             }
         } //자연로그 e, ln 
 
+        internal void Trigonometry(string triText,  ViewModel viewModel)
+        {
+
+        }//삼각법 
     }
 }
