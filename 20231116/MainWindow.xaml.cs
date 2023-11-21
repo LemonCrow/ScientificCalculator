@@ -25,6 +25,8 @@ namespace _20231116
         private string _textValue = "0";
         private string _expression = "";
         public bool _isFinal = false;
+        public bool _isInt = true;
+
 
         public string TextValue
         {
@@ -59,6 +61,8 @@ namespace _20231116
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        //BigInteger 관련 처리
+
         private BigInteger previousNumber;
         public BigInteger PreviousNumber
         {
@@ -68,6 +72,22 @@ namespace _20231116
                 if (previousNumber != value)
                 {
                     previousNumber = value;
+                    OnPropertyChanged(nameof(PreviousNumber));
+                }
+            }
+        }
+
+        //Decimal 관련 처리
+
+        private decimal decimalPreviousNumber;
+        public decimal DecimalPreviousNumber
+        {
+            get { return decimalPreviousNumber; }
+            set
+            {
+                if (decimalPreviousNumber != value)
+                {
+                    decimalPreviousNumber = value;
                     OnPropertyChanged(nameof(PreviousNumber));
                 }
             }
@@ -87,6 +107,8 @@ namespace _20231116
             }
         }
 
+        //BigInteger 관련 처리
+
         private BigInteger _previousResult;
         public BigInteger PreviousResult
         {
@@ -101,20 +123,35 @@ namespace _20231116
             }
         }
 
-        private string _fullExpression = "";
-    public string FullExpression
-    {
-        get { return _fullExpression; }
-        set
+        //Decimal 관련 처리
+
+        private decimal _decimalPreviousResult;
+        public decimal DecimalPreviousResult
         {
-            if (_fullExpression != value)
+            get { return _decimalPreviousResult; }
+            set
             {
-                _fullExpression = value;
-                OnPropertyChanged(nameof(FullExpression));
+                if (_decimalPreviousResult != value)
+                {
+                    _decimalPreviousResult = value;
+                    OnPropertyChanged(nameof(DecimalPreviousResult));
+                }
             }
         }
-    }
 
+        private string _fullExpression = "";
+        public string FullExpression
+        {
+            get { return _fullExpression; }
+            set
+            {
+                if (_fullExpression != value)
+                {
+                    _fullExpression = value;
+                    OnPropertyChanged(nameof(FullExpression));
+                }
+            }
+        }
 
     }
     /// <summary>
@@ -125,7 +162,6 @@ namespace _20231116
         private string[] angles = { "GRAD", "DEG", "RAD" };
         private int anglesInt = 1;
 
-        private bool isBra = false;
 
         private BigInteger stringNumber = 0;
 
@@ -221,7 +257,7 @@ namespace _20231116
         //F-E
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         //삼각법
@@ -271,7 +307,7 @@ namespace _20231116
                 cot.Content = "coth^-1";
             }
             //다 off
-            else if(Trigonometry2nd.IsChecked == false && TrigonometryHyp.IsChecked == false)
+            else if (Trigonometry2nd.IsChecked == false && TrigonometryHyp.IsChecked == false)
             {
                 sin.Content = "sin";
                 cos.Content = "cos";
@@ -317,29 +353,29 @@ namespace _20231116
         private void NumPad2nd_Checked(object sender, RoutedEventArgs e)
         {
 
-                sqr.Content = "x³";
-                root.Content = "3√x";
-                square.Content = "y√x";
-                square10.Content = "2^x";
-                //"log_y(x)"라고 읽으며, 이는 "x의 y 밑 로그(logarithm)"를 나타냅니다. 로그 함수는 지수 함수의 역함수로, 어떤 수를 다른 수의 거듭제곱으로 나타낼 수 있는 횟수를 계산합니다. 즉, "y의 몇 제곱이 x와 같은가?"를 나타내는 수학적 연산입니다.
-                //나중에 수식짤때 참고
-                log.Content = "log_y(x)";
-                nSquare.Content = "e^x";
+            sqr.Content = "x³";
+            root.Content = "3√x";
+            square.Content = "y√x";
+            square10.Content = "2^x";
+            //"log_y(x)"라고 읽으며, 이는 "x의 y 밑 로그(logarithm)"를 나타냅니다. 로그 함수는 지수 함수의 역함수로, 어떤 수를 다른 수의 거듭제곱으로 나타낼 수 있는 횟수를 계산합니다. 즉, "y의 몇 제곱이 x와 같은가?"를 나타내는 수학적 연산입니다.
+            //나중에 수식짤때 참고
+            log.Content = "log_y(x)";
+            nSquare.Content = "e^x";
 
-                
-            
+
+
         }
 
         //넘패드 2nd 체크헤제
         private void NumPad2nd_Unchecked(object sender, RoutedEventArgs e)
         {
 
-                sqr.Content = "x²";
-                root.Content = "2√x";
-                square.Content = "x^y";
-                square10.Content = "10^x";
-                log.Content = "log";
-                nSquare.Content = "ln";
+            sqr.Content = "x²";
+            root.Content = "2√x";
+            square.Content = "x^y";
+            square10.Content = "10^x";
+            log.Content = "log";
+            nSquare.Content = "ln";
         }
 
         //넘패드0 ~ 9
@@ -404,8 +440,9 @@ namespace _20231116
                     viewModel.TextValue = "0";
                     viewModel._isFinal = false;
                 }
+                
                 // 이전 연산 결과가 표시되고 있는지 확인
-                if (viewModel.TextValue == FormatNumberWithCommas(viewModel.PreviousResult))
+                if (viewModel.TextValue == FormatNumberWithCommas(Convert.ToString(viewModel.PreviousResult)) || viewModel.TextValue == FormatNumberWithCommas(Convert.ToString(viewModel.DecimalPreviousResult)))
                 {
                     // 새로운 숫자로 텍스트 업데이트
                     viewModel.TextValue = num.ToString();
@@ -414,8 +451,16 @@ namespace _20231116
                 {
                     // 기존 값에 숫자 추가
                     var numericText = viewModel.TextValue.Replace(",", "").Replace(" ", "");
-                    var updatedNumber = BigInteger.Parse(numericText + num);
-                    viewModel.TextValue = FormatNumberWithCommas(updatedNumber);
+                    if (viewModel._isInt)
+                    {
+                        var updatedNumber = BigInteger.Parse(numericText + num);
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(updatedNumber));
+                    }
+                    else
+                    {
+                        var updatedNumber = Decimal.Parse(numericText + num);
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(updatedNumber));
+                    }
                 }
             }
         }
@@ -423,28 +468,76 @@ namespace _20231116
 
 
         //콤마 추가
-        private string FormatNumberWithCommas(BigInteger number)
+        private string FormatNumberWithCommas(string str)
         {
-            bool isNegative = number < 0;
-            var numericText = number.ToString();
-            var builder = new StringBuilder();
 
-            int count = 0;
-            int start = isNegative ? 1 : 0; // 음수인 경우 첫 번째 자리 ('-')를 건너뜁니다.
-
-            for (int i = numericText.Length - 1; i >= start; i--)
+            var viewModel = DataContext as ViewModel;
+            if (viewModel._isInt)
             {
-                builder.Append(numericText[i]);
-                count++;
+                BigInteger number = BigInteger.Parse(str);
+                bool isNegative = number < 0;
+                var numericText = number.ToString();
+                var builder = new StringBuilder();
 
-                if (count % 3 == 0 && i != start)
+                int count = 0;
+                int start = isNegative ? 1 : 0; // 음수인 경우 첫 번째 자리 ('-')를 건너뜁니다.
+
+                for (int i = numericText.Length - 1; i >= start; i--)
                 {
-                    builder.Append(",");
-                }
-            }
+                    builder.Append(numericText[i]);
+                    count++;
 
-            string formattedNumber = new string(builder.ToString().Reverse().ToArray());
-            return isNegative ? "-" + formattedNumber : formattedNumber; // 음수인 경우 앞에 '-' 추가
+                    if (count % 3 == 0 && i != start)
+                    {
+                        builder.Append(",");
+                    }
+                }
+
+                string formattedNumber = new string(builder.ToString().Reverse().ToArray());
+                return isNegative ? "-" + formattedNumber : formattedNumber; // 음수인 경우 앞에 '-' 추가
+            }
+            else
+            {
+                Decimal number = Decimal.Parse(str);
+                bool isNegative = number < 0;
+                var numericText = number.ToString();
+                string[] parts = numericText.Split('.');
+                StringBuilder builder = new StringBuilder();
+
+                // 음수 부호 확인 및 정수 부분 처리
+                string integerPart = parts[0];
+
+                if (integerPart.StartsWith("-"))
+                {
+                    isNegative = true;
+                    integerPart = integerPart.Substring(1); // 음수 부호 제거
+                }
+
+                for (int i = integerPart.Length - 1; i >= 0; i--)
+                {
+                    builder.Insert(0, integerPart[i]);
+                    if ((integerPart.Length - i) % 3 == 0 && i > 0)
+                    {
+                        builder.Insert(0, ",");
+                    }
+                }
+
+                // 음수 부호 추가
+                if (isNegative)
+                {
+                    builder.Insert(0, "-");
+                }
+
+                // 소수점과 소수 부분 처리
+                if (parts.Length > 1)
+                {
+                    builder.Append(".");
+                    builder.Append(parts[1]);
+                }
+
+                string formattedNumber = builder.ToString();
+                return isNegative ? "-" + formattedNumber : formattedNumber; // 음수인 경우 앞에 '-' 추가
+            }
         }
 
 
@@ -455,13 +548,34 @@ namespace _20231116
             var viewModel = DataContext as ViewModel;
             if (viewModel != null && viewModel.TextValue.Length > 0)
             {
-                var numericText = viewModel.TextValue.Replace(",", "").Replace(" ", ""); 
-                numericText = numericText.Substring(0, numericText.Length - 1); 
+                var numericText = viewModel.TextValue.Replace(",", "").Replace(" ", "");
+                if (viewModel._isInt)
+                {
+                    numericText = numericText.Substring(0, numericText.Length - 1);
+                }
+                else
+                {
+
+                    numericText = numericText.Substring(0, numericText.Length - 1);
+                    if (!numericText.Contains('.'))
+                    {
+                        viewModel._isInt = true;
+                    }
+                    
+                }
 
                 if (!string.IsNullOrEmpty(numericText))
                 {
-                    BigInteger.TryParse(numericText, out BigInteger updatedNumber);
-                    viewModel.TextValue = FormatNumberWithCommas(updatedNumber);
+                    if (viewModel._isInt)
+                    {
+                        BigInteger.TryParse(numericText, out BigInteger updatedNumber);
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(updatedNumber));
+                    }
+                    else
+                    {
+                        Decimal.TryParse(numericText, out Decimal updatedNumber);
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(updatedNumber));
+                    }
                 }
                 else
                 {
@@ -484,29 +598,64 @@ namespace _20231116
                 }
 
                 // 이전 결과를 현재 값으로 설정
-                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
-
-                if(viewModel.PreviousResult != viewModel.PreviousNumber)
+                if (viewModel._isInt)
                 {
-                    // 현재 수식을 평가하여 결과 저장               
-                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                    viewModel.PreviousResult = result;
-
-                    // 연산자 추가 및 TextValue 업데이트
-                    viewModel.Expression += viewModel.TextValue + " + ";
-                    viewModel.TextValue = FormatNumberWithCommas(result);
+                    viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
                 }
                 else
                 {
-                    if (viewModel.Expression.Split(' ').Length > 2)
-                    {
-                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
-                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
-                        {
-                            viewModel.Expression += " + ";
-                        }
-                    }
+                    viewModel.DecimalPreviousNumber = Decimal.Parse(viewModel.TextValue.Replace(",", ""));
+                }
 
+                if (viewModel._isInt)
+                {
+                    if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        viewModel.PreviousResult = BigInteger.Parse(result);
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " + ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " + ";
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    if (viewModel.DecimalPreviousResult != viewModel.DecimalPreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        viewModel.DecimalPreviousResult = Decimal.Parse(result);
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " + ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " + ";
+                            }
+                        }
+
+                    }
                 }
 
             }
@@ -526,30 +675,76 @@ namespace _20231116
                     viewModel._isFinal = false;
                 }
                 // 이전 결과를 현재 값으로 설정
-                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
-
-                if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                if (viewModel._isInt)
                 {
-                    // 현재 수식을 평가하여 결과 저장               
-                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                    viewModel.PreviousResult = result;
+                    viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
-                    // 연산자 추가 및 TextValue 업데이트
-                    viewModel.Expression += viewModel.TextValue + " - ";
-                    viewModel.TextValue = FormatNumberWithCommas(result);
+                    if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        if (viewModel._isInt)
+                        {
+                            viewModel.PreviousResult = BigInteger.Parse(result);
+                        }
+                        else
+                        {
+                            viewModel.DecimalPreviousNumber = Decimal.Parse(result);
+                        }
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " - ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " - ";
+                            }
+                        }
+
+                    }
                 }
                 else
                 {
-                    if (viewModel.Expression.Split(' ').Length > 2)
-                    {
-                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
-                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
-                        {
-                            viewModel.Expression += " - ";
-                        }
-                    }
+                    viewModel.DecimalPreviousNumber = Decimal.Parse(viewModel.TextValue.Replace(",", ""));
 
+                    if (viewModel.DecimalPreviousResult != viewModel.DecimalPreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        if (viewModel._isInt)
+                        {
+                            viewModel.PreviousResult = BigInteger.Parse(result);
+                        }
+                        else
+                        {
+                            viewModel.DecimalPreviousResult = Decimal.Parse(result);
+                        }
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " - ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " - ";
+                            }
+                        }
+
+                    }
                 }
+
+                
             }
         }
 
@@ -565,30 +760,68 @@ namespace _20231116
                     viewModel._isFinal = false;
                 }
                 // 이전 결과를 현재 값으로 설정
-                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
-
-
-                if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                if (viewModel._isInt)
                 {
-                    // 현재 수식을 평가하여 결과 저장               
-                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                    viewModel.PreviousResult = result;
+                    viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
-                    // 연산자 추가 및 TextValue 업데이트
-                    viewModel.Expression += viewModel.TextValue + " × ";
-                    viewModel.TextValue = FormatNumberWithCommas(result);
+
+                    if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        if (viewModel._isInt)
+                        {
+                            viewModel.PreviousResult = BigInteger.Parse(result);
+                        }
+                        else
+                        {
+                            viewModel.DecimalPreviousNumber = Decimal.Parse(result);
+                        }
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " × ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " × ";
+                            }
+                        }
+
+                    }
                 }
                 else
                 {
-                    if (viewModel.Expression.Split(' ').Length > 2)
-                    {
-                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
-                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
-                        {
-                            viewModel.Expression += " × ";
-                        }
-                    }
+                    viewModel.DecimalPreviousNumber = Decimal.Parse(viewModel.TextValue.Replace(",", ""));
 
+
+                    if (viewModel.DecimalPreviousResult != viewModel.DecimalPreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        viewModel.DecimalPreviousResult = Decimal.Parse(result);
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " × ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " × ";
+                            }
+                        }
+
+                    }
                 }
             }
         }
@@ -605,29 +838,66 @@ namespace _20231116
                     viewModel._isFinal = false;
                 }
                 // 이전 결과를 현재 값으로 설정
-                viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
-
-                if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                if (viewModel._isInt)
                 {
-                    // 현재 수식을 평가하여 결과 저장               
-                    var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                    viewModel.PreviousResult = result;
+                    viewModel.PreviousNumber = BigInteger.Parse(viewModel.TextValue.Replace(",", ""));
 
-                    // 연산자 추가 및 TextValue 업데이트
-                    viewModel.Expression += viewModel.TextValue + " ÷ ";
-                    viewModel.TextValue = FormatNumberWithCommas(result);
+                    if (viewModel.PreviousResult != viewModel.PreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        if (viewModel._isInt)
+                        {
+                            viewModel.PreviousResult = BigInteger.Parse(result);
+                        }
+                        else
+                        {
+                            viewModel.DecimalPreviousNumber = Decimal.Parse(result);
+                        }
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " ÷ ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " ÷ ";
+                            }
+                        }
+
+                    }
                 }
                 else
                 {
-                    if (viewModel.Expression.Split(' ').Length > 2)
-                    {
-                        System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
-                        if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
-                        {
-                            viewModel.Expression += " ÷ ";
-                        }
-                    }
+                    viewModel.DecimalPreviousNumber = Decimal.Parse(viewModel.TextValue.Replace(",", ""));
 
+                    if (viewModel.DecimalPreviousResult != viewModel.DecimalPreviousNumber)
+                    {
+                        // 현재 수식을 평가하여 결과 저장               
+                        var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
+                        viewModel.DecimalPreviousResult = Decimal.Parse(result);
+
+                        // 연산자 추가 및 TextValue 업데이트
+                        viewModel.Expression += viewModel.TextValue + " ÷ ";
+                        viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
+                    }
+                    else
+                    {
+                        if (viewModel.Expression.Split(' ').Length > 2)
+                        {
+                            System.Diagnostics.Debug.WriteLine(viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2]);
+                            if (viewModel.Expression.Split(' ')[viewModel.Expression.Split(' ').Length - 2] == ")")
+                            {
+                                viewModel.Expression += " ÷ ";
+                            }
+                        }
+
+                    }
                 }
             }
         }
@@ -654,15 +924,22 @@ namespace _20231116
                     viewModel._isFinal = false;
                 }
 
-                
+
 
                 // 전체 수식 평가
                 var result = EvaluateExpression(viewModel.Expression + viewModel.TextValue);
-                viewModel.PreviousResult = result;
+                if (viewModel._isInt)
+                {
+                    viewModel.PreviousResult = BigInteger.Parse(result);
+                }
+                else
+                {
+                    viewModel.DecimalPreviousResult = Decimal.Parse(result);
+                }
 
                 // 현재 텍스트 값과 닫는 괄호 추가
                 viewModel.Expression += viewModel.TextValue + " ) ";
-                viewModel.TextValue = FormatNumberWithCommas(result);
+                viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
 
             }
         }
@@ -679,10 +956,10 @@ namespace _20231116
                 var result = EvaluateExpression(combinedExpression);
 
                 // 결과와 함께 전체 수식을 FullExpression에 저장
-                viewModel.FullExpression = combinedExpression + " = " + FormatNumberWithCommas(result);
+                viewModel.FullExpression = combinedExpression + " = " + FormatNumberWithCommas(Convert.ToString(result));
 
                 // 결과를 TextValue에 표시
-                viewModel.TextValue = FormatNumberWithCommas(result);
+                viewModel.TextValue = FormatNumberWithCommas(Convert.ToString(result));
 
                 // 다음 계산을 위해 PreviousResult 초기화
                 viewModel.PreviousResult = 0;
@@ -696,7 +973,7 @@ namespace _20231116
 
 
         //중위 -> 후위 컨버터 및 필요 항목 추출 평가
-        private BigInteger EvaluateExpression(string expression)
+        private string EvaluateExpression(string expression)
         {
             System.Diagnostics.Debug.WriteLine("expression: " + expression);
             var outputQueue = ConvertToPostfix(expression);
@@ -708,37 +985,70 @@ namespace _20231116
             string result = infix.Replace(",", "");
             var outputQueue = new Queue<string>();
             var operatorStack = new Stack<string>();
+            var viewModel = DataContext as ViewModel;
             var tokens = Regex.Split(result, @"(\s+|\+|\-|\*|\/|\^|\(|\))");
 
             foreach (var token in tokens)
             {
                 if (string.IsNullOrWhiteSpace(token)) continue;
 
-                if (BigInteger.TryParse(token, out BigInteger number))
+                if (viewModel._isInt)
                 {
-                    outputQueue.Enqueue(token);
-                }
-                else if (IsOperator(token))
-                {
-                    while (operatorStack.Count > 0 && GetPrecedence(operatorStack.Peek()) >= GetPrecedence(token))
+                    if (BigInteger.TryParse(token, out BigInteger number))
                     {
-                        outputQueue.Enqueue(operatorStack.Pop());
+                        outputQueue.Enqueue(token);
                     }
-                    operatorStack.Push(token);
-                }
-                else if (token == "(")
-                {
-                    operatorStack.Push(token);
-                }
-                else if (token == ")")
-                {
-                    while (operatorStack.Count > 0 && operatorStack.Peek() != "(")
+                    else if (IsOperator(token))
                     {
-                        outputQueue.Enqueue(operatorStack.Pop());
+                        while (operatorStack.Count > 0 && GetPrecedence(operatorStack.Peek()) >= GetPrecedence(token))
+                        {
+                            outputQueue.Enqueue(operatorStack.Pop());
+                        }
+                        operatorStack.Push(token);
                     }
-                    if (operatorStack.Count > 0)
-                        operatorStack.Pop(); // 여는 괄호 제거
+                    else if (token == "(")
+                    {
+                        operatorStack.Push(token);
+                    }
+                    else if (token == ")")
+                    {
+                        while (operatorStack.Count > 0 && operatorStack.Peek() != "(")
+                        {
+                            outputQueue.Enqueue(operatorStack.Pop());
+                        }
+                        if (operatorStack.Count > 0)
+                            operatorStack.Pop(); // 여는 괄호 제거
+                    }
                 }
+                else
+                {
+                    if (Decimal.TryParse(token, out Decimal number))
+                    {
+                        outputQueue.Enqueue(token);
+                    }
+                    else if (IsOperator(token))
+                    {
+                        while (operatorStack.Count > 0 && GetPrecedence(operatorStack.Peek()) >= GetPrecedence(token))
+                        {
+                            outputQueue.Enqueue(operatorStack.Pop());
+                        }
+                        operatorStack.Push(token);
+                    }
+                    else if (token == "(")
+                    {
+                        operatorStack.Push(token);
+                    }
+                    else if (token == ")")
+                    {
+                        while (operatorStack.Count > 0 && operatorStack.Peek() != "(")
+                        {
+                            outputQueue.Enqueue(operatorStack.Pop());
+                        }
+                        if (operatorStack.Count > 0)
+                            operatorStack.Pop(); // 여는 괄호 제거
+                    }
+                }
+                
             }
 
             while (operatorStack.Count > 0)
@@ -751,53 +1061,101 @@ namespace _20231116
 
 
 
-        private BigInteger EvaluatePostfix(Queue<string> postfix)
+        private string EvaluatePostfix(Queue<string> postfix)
         {
-            var valuesStack = new Stack<BigInteger>();
-
-            while (postfix.Count > 0)
+            var viewModel = DataContext as ViewModel;
+            if (viewModel._isInt)
             {
+                var valuesStack = new Stack<BigInteger>();
 
-                var token = postfix.Dequeue();
-                System.Diagnostics.Debug.WriteLine("Processing token: " + token); // 현재 토큰 로그 출력
+                while (postfix.Count > 0)
+                {
 
-                if (BigInteger.TryParse(token, out BigInteger number))
-                {
-                    valuesStack.Push(number);
-                }
-                else if (IsOperator(token))
-                {
-                    if (valuesStack.Count < 2)
+                    var token = postfix.Dequeue();
+                    System.Diagnostics.Debug.WriteLine("Processing token: " + token); // 현재 토큰 로그 출력
+
+                    if (BigInteger.TryParse(token, out BigInteger number))
                     {
-                        if(token == "-")
+                        valuesStack.Push(number);
+                    }
+                    else if (IsOperator(token))
+                    {
+                        if (valuesStack.Count < 2)
                         {
-                            BigInteger val4 = valuesStack.Pop();
-                            BigInteger val3 = 0;
-                            valuesStack.Push(ApplyOperation(val3, val4, token));
+                            if (token == "-")
+                            {
+                                BigInteger val4 = valuesStack.Pop();
+                                BigInteger val3 = 0;
+                                valuesStack.Push(ApplyOperation(val3, val4, token));
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException("Not enough values in the stack for the operation: " + token);
+                            }
                         }
-                        else
-                        {
-                            throw new InvalidOperationException("Not enough values in the stack for the operation: " + token);
-                        }
+
+                        BigInteger val2 = valuesStack.Pop();
+                        BigInteger val1 = valuesStack.Pop();
+                        valuesStack.Push(ApplyOperation(val1, val2, token));
                     }
 
-                    BigInteger val2 = valuesStack.Pop();
-                    BigInteger val1 = valuesStack.Pop();
-                    valuesStack.Push(ApplyOperation(val1, val2, token));
+                    System.Diagnostics.Debug.WriteLine("Stack status: " + string.Join(", ", valuesStack)); // 스택 상태 로그 출력
                 }
 
-                System.Diagnostics.Debug.WriteLine("Stack status: " + string.Join(", ", valuesStack)); // 스택 상태 로그 출력
-            }
+                if (valuesStack.Count != 1)
+                {
+                    throw new InvalidOperationException("Invalid expression - the stack should contain exactly one value.");
+                }
 
-            if (valuesStack.Count != 1)
+                return Convert.ToString(valuesStack.Pop());
+            }
+            else
             {
-                throw new InvalidOperationException("Invalid expression - the stack should contain exactly one value.");
+                var valuesStack = new Stack<Decimal>();
+                System.Diagnostics.Debug.WriteLine("postfix.Count: " + postfix.Count);
+                while (postfix.Count > 0)
+                {
+
+                    var token = postfix.Dequeue();
+                    System.Diagnostics.Debug.WriteLine("Processing token: " + token); // 현재 토큰 로그 출력
+
+                    if (Decimal.TryParse(token, out Decimal number))
+                    {
+                        valuesStack.Push(number);
+                    }
+                    else if (IsOperator(token))
+                    {
+                        if (valuesStack.Count < 2)
+                        {
+                            if (token == "-")
+                            {
+                                Decimal val4 = valuesStack.Pop();
+                                Decimal val3 = 0;
+                                valuesStack.Push(ApplyOperation(val3, val4, token));
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException("Not enough values in the stack for the operation: " + token);
+                            }
+                        }
+
+                        Decimal val2 = valuesStack.Pop();
+                        Decimal val1 = valuesStack.Pop();
+                        valuesStack.Push(ApplyOperation(val1, val2, token));
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("Stack status: " + string.Join(", ", valuesStack)); // 스택 상태 로그 출력
+                }
+
+                if (valuesStack.Count != 1)
+                {
+                    throw new InvalidOperationException("Invalid expression - the stack should contain exactly one value.");
+                }
+
+                return Convert.ToString(valuesStack.Pop());
             }
 
-            return valuesStack.Pop();
         }
-
-
 
 
 
@@ -847,6 +1205,31 @@ namespace _20231116
             }
         }
 
+        private Decimal ApplyOperation(Decimal val1, Decimal val2, string operation)
+        {
+            switch (operation)
+            {
+                case "+":
+                    return val1 + val2;
+                case "-":
+                    // 첫 번째 피연산자가 없거나 0이면 두 번째 피연산자를 음수로 변환
+                    if (val1 == 0)
+                        return -val2;
+                    else
+                        return val1 - val2;
+                case "×":
+                    return val1 * val2;
+                case "÷":
+                    if (val2 == 0) throw new DivideByZeroException();
+                    return val1 / val2;
+                //case "^":
+                  //  return BigInteger.Pow(val1, (int)val2);
+                default:
+                    throw new NotSupportedException($"Unsupported operation: {operation}");
+            }
+        }
+
+
 
         //c버튼
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -857,13 +1240,25 @@ namespace _20231116
                 viewModel.Expression = "";
                 viewModel.FullExpression = "";
                 viewModel.TextValue = "0";
+                viewModel._isInt = true;
             }
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            Button button = sender as Button;
+
             var viewModel = DataContext as ViewModel;
+        }
+
+        //.버튼
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            if (viewModel._isInt == true)
+            {
+                viewModel.TextValue += ".";
+            }
+            viewModel._isInt = false;
         }
     }
 }
