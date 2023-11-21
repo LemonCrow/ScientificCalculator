@@ -82,6 +82,21 @@ namespace _20231116
             }
         }//사칙연산
 
+        internal void Naturalis(string logText, ViewModel viewModel)
+        {
+            FormatHelper formatHelper = new FormatHelper();
+            if(logText == "e")
+            {
+                viewModel._isInt = false;
+                viewModel.TextValue = formatHelper.FormatNumberWithCommas(Convert.ToString(Math.E), viewModel);
+            }
+            else
+            {
+                viewModel._isInt = false;
+                var result = formatHelper.FormatNumberWithCommas(Convert.ToString(Math.Log(Convert.ToDouble(viewModel.TextValue))), viewModel);
+                viewModel.TextValue = result;
+            }
+        } //자연로그 e, ln 
 
     }
 }

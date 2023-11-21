@@ -122,7 +122,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox IsReadOnly="True" BorderBrush="Transparent" Grid.Column="0" Margin="5,0,5,0" Height="40" VerticalAlignment="Center" TextAlignment="Right" FontWeight="Bold" FontSize="20" Grid.ColumnSpan="5" TextChanged="ExpressionTextBox_TextChanged" Text="{Binding Expression, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox IsReadOnly="True" Foreground="Gray" Background="#f3f3f3" BorderBrush="Transparent" Grid.Column="0" Margin="5,0,5,0" Height="40" VerticalAlignment="Center" TextAlignment="Right" FontWeight="Bold" FontSize="20" Grid.ColumnSpan="5" TextChanged="ExpressionTextBox_TextChanged" Text="{Binding Expression, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBox IsReadOnly="True"  BorderBrush="Transparent" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="5" Height="80" VerticalContentAlignment ="Center" TextAlignment="Right" FontWeight="Bold" FontSize="40" 
                  TextChanged="TextBox_TextChanged" Background="#f3f3f3" Text="{Binding TextValue, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -207,8 +207,8 @@
         </Popup>
 
         <ToggleButton x:Name="NumPad2nd" Grid.Row="5" Grid.Column="0" Style="{StaticResource lightToggleButtonStyle}" Checked="NumPad2nd_Checked" Unchecked="NumPad2nd_Unchecked">2nd</ToggleButton>
-        <Button Grid.Row="5" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">π</Button>
-        <Button Grid.Row="5" Grid.Column="2" Style="{StaticResource NomalButtonStyle}">e</Button>
+        <Button Grid.Row="5" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="PiButton">π</Button>
+        <Button Grid.Row="5" Grid.Column="2" Style="{StaticResource NomalButtonStyle}" Click="Naturalis">e</Button>
         <Button Grid.Row="5" Grid.Column="3" Style="{StaticResource NomalButtonStyle}" Height="39" Margin="2,2,2,0" VerticalAlignment="Top" Click="ClearButton">Ⅽ</Button>
         <Button Grid.Row="5" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="BackspaceButton_Click">⌫</Button>
 
@@ -242,7 +242,7 @@
         <Button Grid.Row="10" Grid.Column="3" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num">3</Button>
         <Button Grid.Row="10" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="FourBasicOperationsButton">+</Button>
 
-        <Button x:Name="nSquare" Grid.Row="11" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">ln</Button>
+        <Button x:Name="nSquare" Grid.Row="11" Grid.Column="0" Style="{StaticResource NomalButtonStyle}" Click="Naturalis">ln</Button>
         <Button Grid.Row="11" Grid.Column="1" Style="{StaticResource NomalButtonStyle}">+/-</Button>
         <Button Grid.Row="11" Grid.Column="2" Style="{StaticResource NomalButtonStyle}" Click="Button_Click_num">0</Button>
         <Button Grid.Row="11" Grid.Column="3" Style="{StaticResource NomalButtonStyle}" Click="DotButton">.</Button>

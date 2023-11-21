@@ -58,7 +58,6 @@ namespace _20231116
             // ViewModel의 TextValue가 자동으로 업데이트되도록 구현
         } //키 입력
 
-
         private void AnglesButton(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
@@ -105,18 +104,17 @@ namespace _20231116
             return 12;
         } // 텍스트 사이즈 자동조절
 
-        private void OpenTriPopupButton_Click(object sender, RoutedEventArgs e)
-        {
-            Trigonometry.IsOpen = !Trigonometry.IsOpen;
-            e.Handled = true;
-        } //삼각법
-
         private void Popup_Closed(object sender, EventArgs e)
         {
             Trigonometry.IsOpen = false;
             function.IsOpen = false;
         } //팝업처리
 
+        private void OpenTriPopupButton_Click(object sender, RoutedEventArgs e)
+        {
+            Trigonometry.IsOpen = !Trigonometry.IsOpen;
+            e.Handled = true;
+        } //삼각법
         private void ChangeTrigonometry(object sender, EventArgs e)
         {
             UpdateTrigonometryTexts();
@@ -167,7 +165,7 @@ namespace _20231116
                 csc.Content = "csch";
                 cot.Content = "coth";
             }
-        } //삼각법 - 버튼들 조건 체크 및 텍스트 변경 << 여기에 나중에 수식 관련 추가하면됨
+        } //삼각법 - 버튼들 조건 체크 및 텍스트 변경 << 여기에 나중에 수식 관련 추가하면됨 
        
         private void openFunPopupButton_Click(object sender, RoutedEventArgs e)
         {
@@ -251,7 +249,7 @@ namespace _20231116
                     viewModel.TextValue = "0";
                 }
             }
-        } // 숫자 하나씩 지우기
+        } //del버튼
 
         private void FourBasicOperationsButton(object sender, RoutedEventArgs e)
         {
@@ -260,8 +258,7 @@ namespace _20231116
             Calculator calculator = new Calculator();
 
             calculator.FourBasicOperations(button.Content.ToString() ,viewModel);
-        } // 연산 버튼 클릭 이벤트 (사칙연산)
-
+        } //연산 버튼(사칙연산)
 
         private void LBraButton_Click(object sender, RoutedEventArgs e)
         {
@@ -302,7 +299,7 @@ namespace _20231116
                 viewModel.TextValue = formatHelper.FormatNumberWithCommas(Convert.ToString(result), viewModel);
 
             }
-        } // 왼쪽 괄호
+        } //왼쪽 괄호
 
         private void EqualsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -328,7 +325,7 @@ namespace _20231116
 
                 viewModel._isFinal = true;
             }
-        } // '=' 버튼 클릭 이벤트
+        } //= 버튼
 
         private void ClearButton(object sender, RoutedEventArgs e)
         {
@@ -351,6 +348,22 @@ namespace _20231116
             }
             viewModel._isInt = false;
         } //.버튼
+
+        private void PiButton(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            FormatHelper formatHelper = new FormatHelper();
+            viewModel._isInt = false;
+            viewModel.TextValue = formatHelper.FormatNumberWithCommas(Convert.ToString(Math.PI), viewModel);
+        } //파이 버튼
+
+        private void Naturalis(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            Button button = sender as Button;
+            Calculator calculator = new Calculator();
+            calculator.Naturalis(Convert.ToString(button.Content), viewModel);
+        } //자연로그 버튼
     }
 
 }
