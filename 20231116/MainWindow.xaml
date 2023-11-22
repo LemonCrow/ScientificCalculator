@@ -139,12 +139,12 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource InvisibleButtonStyle}">MC</Button>
-            <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource InvisibleButtonStyle}">MR</Button>
+            <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource InvisibleButtonStyle}" IsEnabled="False">MC</Button>
+            <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource InvisibleButtonStyle}" IsEnabled="False">MR</Button>
             <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource InvisibleButtonStyle}">M+</Button>
             <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource InvisibleButtonStyle}">M-</Button>
             <Button Grid.Row="1" Grid.Column="4" Style="{StaticResource InvisibleButtonStyle}">MS</Button>
-            <Button Grid.Row="1" Grid.Column="5" Style="{StaticResource InvisibleButtonStyle}">M∨</Button>
+            <Button Grid.Row="1" Grid.Column="5" Style="{StaticResource InvisibleButtonStyle}" IsEnabled="False">M∨</Button>
         </Grid>
 
         <Button x:Name="openTriPopupButton"  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource InvisibleButtonStyle}" Click="OpenTriPopupButton_Click">⊿ 삼각법 ∨</Button >
@@ -221,7 +221,7 @@
         <Button x:Name="root" Grid.Row="7" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">2√x</Button>
         <Button Grid.Row="7" Grid.Column="1" Style="{StaticResource NomalButtonStyle}" Click="LBraButton_Click">(</Button>
         <Button Grid.Row="7" Grid.Column="2" Style="{StaticResource NomalButtonStyle}" Click="RBraButton_Click">)</Button>
-        <Button Grid.Row="7" Grid.Column="3" Style="{StaticResource NomalButtonStyle}">n!</Button>
+        <Button Grid.Row="7" Grid.Column="3" Style="{StaticResource NomalButtonStyle}" Click="Factorial">n!</Button>
         <Button Grid.Row="7" Grid.Column="4" Style="{StaticResource NomalButtonStyle}" Click="FourBasicOperationsButton">÷</Button>
 
         <Button x:Name="square" Grid.Row="8" Grid.Column="0" Style="{StaticResource NomalButtonStyle}">x^y</Button>

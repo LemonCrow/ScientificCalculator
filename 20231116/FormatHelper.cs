@@ -15,12 +15,13 @@ namespace _20231116
         {
             if (viewModel != null)
             {
-                if (!string.IsNullOrEmpty(viewModel.FullExpression))
+                if (!string.IsNullOrEmpty(viewModel.FullExpression) || viewModel._isText == true)
                 {
                     viewModel.Expression = "";
                     viewModel.FullExpression = "";
                     viewModel.TextValue = "0";
                     viewModel._isFinal = false;
+                    viewModel._isText = false;
                 }
 
                 // 이전 연산 결과가 표시되고 있는지 확인
@@ -46,7 +47,6 @@ namespace _20231116
                 }
             }
         } //숫자 업데이트
-
         
         internal string FormatNumberWithCommas(string str, ViewModel viewModel)
         {

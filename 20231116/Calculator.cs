@@ -102,5 +102,40 @@ namespace _20231116
         {
 
         }//삼각법 
+
+        internal bool Factorial(ViewModel viewModel)
+        {
+            if (viewModel._isInt)
+            {
+                if(BigInteger.Parse(viewModel.TextValue) >= 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    viewModel.TextValue = "입력이 잘못되었습니다.";
+                    viewModel._isText = true;
+                    return false;
+                }
+            }
+            else
+            {
+                if (Decimal.Parse(viewModel.TextValue) >= 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    viewModel.TextValue = "입력이 잘못되었습니다.";
+                    viewModel._isText = true;
+                    return false;
+                }
+            }
+        } //팩토리얼
+
+    
+        
     }
+
+    
 }

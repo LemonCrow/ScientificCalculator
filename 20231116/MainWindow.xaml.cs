@@ -26,6 +26,16 @@ namespace _20231116
         private string[] angles = { "GRAD", "DEG", "RAD" };
         private int anglesInt = 1;
 
+        HashSet<string> allowedButtons = new HashSet<string>
+        {
+            "C", "DEG", "Ⅽ", "⌫", "=", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
+        }; //문제 생길 시 켜져있을 버튼
+
+        HashSet<string> disallowedButtons = new HashSet<string>
+        {
+            "MC", "MR", "MS", "M∨"
+        }; //기존에 이미 꺼져있는 버튼
+
 
         private BigInteger stringNumber = 0;
 
@@ -364,6 +374,62 @@ namespace _20231116
             Calculator calculator = new Calculator();
             calculator.Naturalis(Convert.ToString(button.Content), viewModel);
         } //자연로그 버튼
+
+        private void Factorial(object sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as ViewModel;
+            Calculator calculator = new Calculator();
+            ButtonOnOff(calculator.Factorial(viewModel));
+        }
+        public void ButtonOnOff(bool isOff)
+        {
+            if(isOff == false)
+            {
+                foreach (var control in FindVisualChildren<Grid>(this))
+                {
+                    foreach (var child in control.Children)
+                    {
+                        if (child is Button button && !allowedButtons.Contains(button.Content.ToString()))
+                        {
+                            button.IsEnabled = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var control in FindVisualChildren<Grid>(this))
+                {
+                    foreach (var child in control.Children)
+                    {
+                        if (child is Button button && !disallowedButtons.Contains(button.Content.ToString()))
+                        {
+                            button.IsEnabled = true;
+                        }
+                    }
+                }
+            }
+        } //버튼 활/비활 제어
+
+        private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        yield return (T)child;
+                    }
+
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                    {
+                        yield return childOfChild;
+                    }
+                }
+            }
+        } //Grid찾기
     }
 
 }

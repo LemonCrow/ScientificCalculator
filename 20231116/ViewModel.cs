@@ -11,6 +11,7 @@ namespace _20231116
         private string _expression = "";
         public bool _isFinal = false;
         public bool _isInt = true;
+        public bool _isText = false;
 
         public string TextValue
         {
